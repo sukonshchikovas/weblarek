@@ -1,16 +1,24 @@
 import { IBuyer, TPayment } from "../../types";
+import { EventEmitter } from "../base/Events";
 
 export class Buyer {
     private payment: TPayment = '';
     private address: string = '';
     private phone: string = '';
     private email: string = '';
+    public eventEmmitter: EventEmitter;
+
+    constructor(eventEmitter: EventEmitter) {
+        this.eventEmmitter = eventEmitter;
+    }
 
     setData(buyer: Partial<IBuyer>): void {
         if (buyer.payment !== undefined) this.payment = buyer.payment;
         if (buyer.address !== undefined) this.address = buyer.address;
         if (buyer.phone !== undefined) this.phone = buyer.phone;
         if (buyer.email !== undefined) this.email = buyer.email;
+
+        this.eventEmmitter.emit('buyer:change');
     }
 
     getData(): IBuyer {
@@ -26,7 +34,9 @@ export class Buyer {
         this.payment = '';
         this.address = '';
         this.phone = '';
-        this. email = '';
+        this.email = '';
+
+        this.eventEmmitter.emit('buyer:change');
     }
 
     validate(): { isValid: boolean; errors: { [K in keyof IBuyer]?: string } } {
