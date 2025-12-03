@@ -86,8 +86,8 @@ function getCardButtonState(item: IProduct, inBasket: boolean) {
 
 eventEmitter.on('card:select', (item: IProduct) => {
     productsCatalog.setSelectedProduct(item);
-    modal.render({ content: renderCardPreview(item) })
-        .classList.add('modal_active');
+    modal.render({ content: renderCardPreview(item) });
+    modal.open();
 });
 
 eventEmitter.on('cardPreview:action', () => {
@@ -99,8 +99,7 @@ eventEmitter.on('cardPreview:action', () => {
         ? basketShop.deleteProduct(product.id) 
         : basketShop.addProduct(product);
 
-        
-    modal.render().classList.remove('modal_active');
+    modal.close();
 });
 
 function renderBasket(): HTMLElement {
@@ -122,7 +121,8 @@ function renderBasket(): HTMLElement {
 }
 
 eventEmitter.on('basket:open', () => {
-    modal.render({content: renderBasket()}).classList.add('modal_active');
+    modal.render({content: renderBasket()});
+    modal.open();
 })
 
 eventEmitter.on('basket:change', () => {
@@ -138,13 +138,14 @@ eventEmitter.on('card:removeFromBasket', (item: IProduct) => {
 })
 
 eventEmitter.on('modal:close', () => {
-    modal.render().classList.remove('modal_active');
+    modal.close();
 })
 
 eventEmitter.on('basket:order', () => {
     const orderData = buyer.getData();
     const orderContent = orderFormWindow.render({address: orderData.address, paymentMethod: orderData.payment});
-    modal.render({content: orderContent}).classList.add('modal_active');
+    modal.render({content: orderContent});
+    modal.open();
 })
 
 eventEmitter.on('buyer:change', () => {
@@ -191,7 +192,8 @@ eventEmitter.on('order:proceedToContacts', () => {
         email: buyerData.email,
         phone: buyerData.phone
     });
-    modal.render({content: contactsContent}).classList.add('modal_active');
+    modal.render({content: contactsContent});
+    modal.open();
 })
 
 eventEmitter.on('order:pay', () => {
@@ -200,7 +202,8 @@ eventEmitter.on('order:pay', () => {
         .then(response => { 
             
             const orderSuccessContent = orderSuccessWindow.render({description: basketShop.getTotalPrice()});
-            modal.render({content: orderSuccessContent}).classList.add('modal_active');
+            modal.render({content: orderSuccessContent});
+            modal.open();
             
             basketShop.clear();
             buyer.clear();
@@ -226,7 +229,7 @@ function makeOrder(): Promise<IOrderResponse> {
 }
 
 eventEmitter.on('orderSuccess:close', () => {
-    modal.render().classList.remove('modal_active');
+    modal.close();
 })
 
 shopApi.getProducts()
